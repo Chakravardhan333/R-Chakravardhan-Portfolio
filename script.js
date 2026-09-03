@@ -1,217 +1,306 @@
-/* =====================================================
-   MOBILE MENU
-===================================================== */
+/* =========================================================
+   RAMAGIRI CHAKRAVARDHAN PORTFOLIO
+   Main JavaScript
+   ========================================================= */
 
-const menuButton = document.getElementById("menuButton");
-const navMenu = document.getElementById("navMenu");
+   document.addEventListener("DOMContentLoaded", () => {
 
-if (menuButton && navMenu) {
-    menuButton.addEventListener("click", () => {
-        navMenu.classList.toggle("active");
+    /* =====================================================
+       MOBILE NAVIGATION
+       ===================================================== */
 
-        if (navMenu.classList.contains("active")) {
-            menuButton.textContent = "✕";
-            menuButton.setAttribute("aria-label", "Close menu");
-        } else {
-            menuButton.textContent = "☰";
-            menuButton.setAttribute("aria-label", "Open menu");
-        }
-    });
+    const menuButton = document.getElementById("menuButton");
+    const navMenu = document.getElementById("navMenu");
 
-    const navLinks = document.querySelectorAll(".nav-link");
+    if (menuButton && navMenu) {
 
-    navLinks.forEach((link) => {
-        link.addEventListener("click", () => {
-            navMenu.classList.remove("active");
-            menuButton.textContent = "☰";
-            menuButton.setAttribute("aria-label", "Open menu");
+        menuButton.addEventListener("click", () => {
+            navMenu.classList.toggle("open");
+
+            if (navMenu.classList.contains("open")) {
+                menuButton.textContent = "✕";
+            } else {
+                menuButton.textContent = "☰";
+            }
         });
-    });
-}
 
 
-/* =====================================================
-   NAVBAR SHADOW
-===================================================== */
+        // Close menu after clicking a navigation link
 
-const navbar = document.getElementById("navbar");
+        const navLinks = navMenu.querySelectorAll("a");
 
-window.addEventListener("scroll", () => {
-    if (!navbar) return;
+        navLinks.forEach((link) => {
 
-    if (window.scrollY > 30) {
-        navbar.style.boxShadow =
-            "0 15px 40px rgba(0, 0, 0, 0.25)";
-    } else {
-        navbar.style.boxShadow = "none";
-    }
-});
+            link.addEventListener("click", () => {
 
-
-/* =====================================================
-   ACTIVE NAVIGATION
-===================================================== */
-
-const sections = document.querySelectorAll("section[id]");
-const navigationLinks = document.querySelectorAll(".nav-link");
-
-function updateActiveLink() {
-    let currentSection = "";
-
-    sections.forEach((section) => {
-        const sectionTop = section.offsetTop - 150;
-        const sectionHeight = section.offsetHeight;
-
-        if (
-            window.scrollY >= sectionTop &&
-            window.scrollY < sectionTop + sectionHeight
-        ) {
-            currentSection = section.getAttribute("id");
-        }
-    });
-
-    navigationLinks.forEach((link) => {
-        link.classList.remove("active");
-
-        if (
-            link.getAttribute("href") === "#" + currentSection
-        ) {
-            link.classList.add("active");
-        }
-    });
-}
-
-window.addEventListener("scroll", updateActiveLink);
-
-updateActiveLink();
-
-
-/* =====================================================
-   SCROLL REVEAL ANIMATION
-===================================================== */
-
-const animatedElements = document.querySelectorAll(
-    ".section-heading, .about-card, .skill-card, .timeline-item, .project-card, .education-item, .cert-card, .contact-card"
-);
-
-if ("IntersectionObserver" in window) {
-
-    const observer = new IntersectionObserver(
-        (entries) => {
-            entries.forEach((entry) => {
-
-                if (entry.isIntersecting) {
-                    entry.target.classList.add("show");
-                    observer.unobserve(entry.target);
-                }
+                navMenu.classList.remove("open");
+                menuButton.textContent = "☰";
 
             });
-        },
-        {
-            threshold: 0.12
+
+        });
+
+    }
+
+
+    /* =====================================================
+       ACTIVE NAVIGATION LINK
+       ===================================================== */
+
+    const sections = document.querySelectorAll("section[id]");
+    const navigationLinks = document.querySelectorAll(".nav-link");
+
+    function updateActiveNav() {
+
+        let currentSection = "";
+
+        sections.forEach((section) => {
+
+            const sectionTop = section.offsetTop - 150;
+            const sectionHeight = section.offsetHeight;
+
+            if (
+                window.scrollY >= sectionTop &&
+                window.scrollY < sectionTop + sectionHeight
+            ) {
+                currentSection = section.getAttribute("id");
+            }
+
+        });
+
+        navigationLinks.forEach((link) => {
+
+            link.classList.remove("active");
+
+            const href = link.getAttribute("href");
+
+            if (href === `#${currentSection}`) {
+                link.classList.add("active");
+            }
+
+        });
+
+    }
+
+    window.addEventListener("scroll", updateActiveNav);
+
+    updateActiveNav();
+
+
+    /* =====================================================
+       NAVBAR SCROLL EFFECT
+       ===================================================== */
+
+    const navbar = document.getElementById("navbar");
+
+    function updateNavbar() {
+
+        if (!navbar) return;
+
+        if (window.scrollY > 30) {
+            navbar.style.background = "rgba(10, 10, 10, 0.96)";
+        } else {
+            navbar.style.background = "rgba(10, 10, 10, 0.88)";
         }
+
+    }
+
+    window.addEventListener("scroll", updateNavbar);
+
+    updateNavbar();
+
+
+    /* =====================================================
+       SMOOTH SCROLL
+       ===================================================== */
+
+    const internalLinks = document.querySelectorAll('a[href^="#"]');
+
+    internalLinks.forEach((link) => {
+
+        link.addEventListener("click", (event) => {
+
+            const targetId = link.getAttribute("href");
+
+            if (!targetId || targetId === "#") {
+                return;
+            }
+
+            const target = document.querySelector(targetId);
+
+            if (target) {
+
+                event.preventDefault();
+
+                const navbarHeight = navbar
+                    ? navbar.offsetHeight
+                    : 0;
+
+                const targetPosition =
+                    target.getBoundingClientRect().top +
+                    window.scrollY -
+                    navbarHeight;
+
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: "smooth"
+                });
+
+            }
+
+        });
+
+    });
+
+
+    /* =====================================================
+       REVEAL ANIMATION
+       ===================================================== */
+
+    const revealElements = document.querySelectorAll(
+        ".about-card, .skill-card, .project-card, .cert-card, .timeline-item, .education-item, .contact-card"
     );
 
-    animatedElements.forEach((element) => {
-        observer.observe(element);
-    });
+    if ("IntersectionObserver" in window) {
 
-} else {
+        const observer = new IntersectionObserver(
+            (entries, observerInstance) => {
 
-    /* Fallback for older browsers */
-    animatedElements.forEach((element) => {
-        element.classList.add("show");
-    });
+                entries.forEach((entry) => {
 
-}
+                    if (entry.isIntersecting) {
+
+                        entry.target.style.opacity = "1";
+                        entry.target.style.transform = "translateY(0)";
+
+                        observerInstance.unobserve(entry.target);
+
+                    }
+
+                });
+
+            },
+            {
+                threshold: 0.12
+            }
+        );
 
 
-/* =====================================================
-   CLOSE MENU ON RESIZE
-===================================================== */
+        revealElements.forEach((element) => {
 
-window.addEventListener("resize", () => {
+            element.style.opacity = "0";
+            element.style.transform = "translateY(20px)";
+            element.style.transition =
+                "opacity 0.6s ease, transform 0.6s ease";
 
-    if (window.innerWidth > 850) {
+            observer.observe(element);
 
-        if (navMenu) {
-            navMenu.classList.remove("active");
-        }
+        });
 
-        if (menuButton) {
-            menuButton.textContent = "☰";
-            menuButton.setAttribute("aria-label", "Open menu");
-        }
     }
 
-});
+
+    /* =====================================================
+       EXTERNAL LINKS
+       ===================================================== */
+
+    const externalLinks = document.querySelectorAll(
+        'a[href^="http"]'
+    );
+
+    externalLinks.forEach((link) => {
+
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+
+    });
 
 
-/* =====================================================
-   CLOSE MENU WHEN CLICKING OUTSIDE
-===================================================== */
+    /* =====================================================
+       EMAIL LINKS
+       ===================================================== */
 
-document.addEventListener("click", (event) => {
+    const emailLinks = document.querySelectorAll(
+        'a[href^="mailto:"]'
+    );
 
-    if (!navMenu || !menuButton) return;
+    emailLinks.forEach((link) => {
 
-    const clickedInsideMenu =
-        navMenu.contains(event.target);
+        link.addEventListener("click", () => {
 
-    const clickedMenuButton =
-        menuButton.contains(event.target);
+            console.log(
+                "Opening email:",
+                link.getAttribute("href")
+            );
 
-    if (
-        !clickedInsideMenu &&
-        !clickedMenuButton
-    ) {
-        navMenu.classList.remove("active");
-        menuButton.textContent = "☰";
-        menuButton.setAttribute("aria-label", "Open menu");
+        });
+
+    });
+
+
+    /* =====================================================
+       CURRENT YEAR
+       ===================================================== */
+
+    const yearElements = document.querySelectorAll(
+        "[data-current-year]"
+    );
+
+    yearElements.forEach((element) => {
+
+        element.textContent = new Date().getFullYear();
+
+    });
+
+
+    /* =====================================================
+       IMAGE ERROR HANDLING
+       ===================================================== */
+
+    const profileImage =
+        document.querySelector(".profile-image");
+
+    if (profileImage) {
+
+        profileImage.addEventListener("error", () => {
+
+            profileImage.style.display = "none";
+
+            const parent =
+                profileImage.parentElement;
+
+            if (parent) {
+
+                parent.style.display = "grid";
+                parent.style.placeItems = "center";
+
+                const fallback =
+                    document.createElement("span");
+
+                fallback.textContent = "RC";
+
+                fallback.style.fontFamily =
+                    '"Space Grotesk", sans-serif';
+
+                fallback.style.fontSize = "48px";
+                fallback.style.fontWeight = "800";
+                fallback.style.color = "#777";
+
+                parent.appendChild(fallback);
+
+            }
+
+        });
+
     }
 
+
+    /* =====================================================
+       CONSOLE MESSAGE
+       ===================================================== */
+
+    console.log(
+        "Ramagiri Chakravardhan Portfolio loaded successfully."
+    );
+
 });
-
-
-/* =====================================================
-   IMAGE CHECK
-===================================================== */
-
-const profileImage =
-    document.querySelector(".profile-image");
-
-if (profileImage) {
-
-    profileImage.addEventListener("error", () => {
-        console.log(
-            "Profile image could not be loaded."
-        );
-    });
-
-    profileImage.addEventListener("load", () => {
-        console.log(
-            "Profile image loaded successfully."
-        );
-    });
-}
-
-
-/* =====================================================
-   EXTERNAL LINKS
-===================================================== */
-
-const externalLinks =
-    document.querySelectorAll('a[target="_blank"]');
-
-externalLinks.forEach((link) => {
-    link.setAttribute("rel", "noopener noreferrer");
-});
-
-
-/* =====================================================
-   YEAR
-===================================================== */
-
-console.log(
-    "Ramagiri Chakravardhan Portfolio loaded successfully."
-);
